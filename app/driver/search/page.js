@@ -1,7 +1,7 @@
-
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export default function SearchPage() {
@@ -137,6 +137,16 @@ export default function SearchPage() {
                     }>
                       {charger.status.replaceAll("_", " ")}
                     </p>
+
+                    {charger.status === "available" && (
+                      <Link
+                        href={`/driver/reserve?stationId=${station.id}&chargerId=${charger.id}`}
+                        className="inline-block mt-3 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                      >
+                        Book Now
+                      </Link>
+                    )}
+
                   </div>
                 ))}
               </div>
