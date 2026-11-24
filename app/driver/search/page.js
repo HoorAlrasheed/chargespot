@@ -10,7 +10,9 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
-
+  const [connectorType, setConnectorType] = useState("All");
+  const [availableOnly, setAvailableOnly] = useState(false);
+  const [maxPrice, setMaxPrice] = useState("");
   async function handleSearch(e) {
     e.preventDefault();
     setLoading(true);
@@ -36,11 +38,31 @@ export default function SearchPage() {
 
       const keyword = search.trim().toLowerCase();
 
-      const results = (data || []).filter(
-        (station) =>
-          station.city.toLowerCase().includes(keyword) ||
-          station.name.toLowerCase().includes(keyword)
-      );
+     const results = (data || [])
+  .filter(
+    (station) =>
+      station.city.toLowerCase().includes(keyword) ||
+      station.name.toLowerCase().includes(keyword)
+  )
+  .filter(
+    (station) =>
+      maxPrice === "" ||
+      Number(station.price_per_kwh) <= Number(maxPrice)
+  )
+  .map((station) => ({
+    ...station,
+    chargers: (station.chargers || []).filter(
+      (charger) =>
+        (connectorType === "All" ||
+          charger.connector_type === connectorType) &&
+        (!availableOnly || charger.status === "available")
+    ),
+  }))
+  .filter(
+    (station) =>
+      (connectorType === "All" && !availableOnly) ||
+      station.chargers.length > 0
+  );
 
       setStations(results);
       setSearched(true);
@@ -67,7 +89,45 @@ export default function SearchPage() {
         <h2 className="text-xl mb-4">
           Find Charging Stations
         </h2>
+<div className="mb-4">
+  <label className="block mb-2 font-medium">
+    Connector Type
+  </label>
 
+  <select
+    value={connectorType}
+    onChange={(e) => setConnectorType(e.target.value)}
+    className="border rounded-lg p-3 bg-white"
+  >
+    <option value="All">All Connectors</option>
+    <option value="Type 2">Type 2</option>
+    <option value="CCS2">CCS2</option>
+    <option value="CHAdeMO">CHAdeMO</option>
+  </select>
+  <label className="flex items-center gap-2 mt-4">
+  <input
+    type="checkbox"
+    checked={availableOnly}
+    onChange={(e) => setAvailableOnly(e.target.checked)}
+  />
+  Available Only
+</label>
+<div className="mt-4">
+  <label className="block mb-2 font-medium">
+    Maximum Price (SAR/kWh)
+  </label>
+
+  <input
+    type="number"
+    min="0"
+    step="0.01"
+    value={maxPrice}
+    onChange={(e) => setMaxPrice(e.target.value)}
+    placeholder="Enter maximum price"
+    className="border rounded-lg p-3 bg-white"
+  />
+</div>
+</div>
         <form onSubmit={handleSearch} className="flex gap-3">
           <input
             type="text"
