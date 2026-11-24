@@ -346,7 +346,7 @@ export default function MyReservationsPage() {
 
                     {res.status === "pending_payment" && upcoming && (
                       <Link
-                        href={`/driver/payment?reservationId=${res.id}`}
+                        href={`/driver/reserve/payment?reservationId=${res.id}`}
                         className="text-xs font-medium px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition"
                       >
                         Complete Payment

@@ -217,8 +217,7 @@ function ReserveContent() {
     }
 
     // Redirect to payment page (UC-08)
-    router.push(`/driver/payment?reservationId=${data.id}`);
-  }
+router.push(`/driver/reserve/payment?reservationId=${data.id}`);  }
 
   if (loading) {
     return (
